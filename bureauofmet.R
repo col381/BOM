@@ -41,16 +41,47 @@ TempMinMaxValues <- filter(TMTM,Temp_min!='-',Temp_max!='-',Rainfall!=0)
 TempMinMaxValues
 mutate(TempMinMaxValues,TDiff = as.numeric(Temp_max)-as.numeric(Temp_min))
 #above created a new column TDiff to get the difference between Max and Min
-#Question which month saw the lowest temperature difference
+#TempMinMaxValuesTempMinMaxValuesQuestion which month saw the lowest temperature difference
 #use mean function to get average
 #sort assending
 TempMinMaxValues%>%
   mutate(TDiff = as.numeric(Temp_max)-as.numeric(Temp_min))%>%
-  mutate(ave = mean(Month))%>%
-  arrange(ave)%>%
-  select(Station_number,Year,Month,ave)
+  mutate(ave = mean(TDiff))%>%
+  arrange(TDiff)%>%
+  select(Station_number,Year,Month,TDiff,ave)
+ 
 # I think above seems right however checking with others there are averages
-# lower than 6.51 in the data set
+# lower than 6.51 in the data set.  6.51 was in December 1998
+
+CheckVariant <- TempMinMaxValues%>%
+  mutate(TDiff = as.numeric(Temp_max)-as.numeric(Temp_min))%>%
+  mutate(ave = mean(TDiff))%>%
+  arrange(TDiff)%>% 
+  select(Station_number,Year,Month,TDiff,ave)
+CheckVariant
+tail(CheckVariant)
+head(CheckVariant)
+
+#CheckVariant confirms something is not right as the tail of the dta set is
+#also returning 6.51 changing to TDiff also 
+TempMinMaxValues%>%
+  mutate(TDiff = as.numeric(Temp_max)-as.numeric(Temp_min))%>%
+ group_by(Month)%>%
+  summarise(average = mean(TDiff)#Confused but now thinking question may be asking what is the average of TDiff
+summarise(CheckVariant,AvTD=mean(TDiff))
+#above returns an average of 7.36 still doesn't answer question though.
+#Do we need to arrange by month and find the average of DIF per month.
+
+#Dong Chen solution below which states, create a new column to derive the difference
+# then collate by month
+TempMinMaxValues%>%
+  mutate(TDiff = as.numeric(Temp_max)-as.numeric(Temp_min))%>%
+  group_by(Month)%>%
+  summarise(Difference = mean(TDiff))%>%
+  filter(Difference == min(Difference))
+
+#QUESTION3
+#Which states show the lowest average daily temperature difference
 
 
 
